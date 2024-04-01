@@ -3,10 +3,11 @@ import { IoMdAdd } from "react-icons/io";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
 import { ACTIONS } from "./Container.jsx";
 
-function Button({ type, inputValue, mRight, dispatch, id }) {
+function Button({ type, inputValue, setInputValue, mRight, dispatch, id }) {
   function handleClick() {
     if (type === "Add") {
-      createNewTask(inputValue);
+      dispatch({type: ACTIONS.ADD_TODO, payload: {input: inputValue}});
+      setInputValue("");
     } else if (type === "Delete") {
       dispatch({ type: ACTIONS.DELETE_TODO, payload: { id } });
     }

@@ -5,7 +5,6 @@ import ToDo from "./ToDo";
 import useThemeStore from "../store/store.js";
 import { v4 as uuidv4 } from "uuid";
 
-//  I am working in test branch
 const LOCAL_STORAGE_KEY = "tasks";
 export const ACTIONS = {
   ADD_TODO: "add-todo",
@@ -16,7 +15,7 @@ export const ACTIONS = {
 const reducer = (tasksArr, action) => {
   switch (action.type) {
     case ACTIONS.ADD_TODO:
-      return [...tasksArr, newTask];
+      return [...tasksArr, createNewTask(action.payload.input)];
 
     case ACTIONS.TOGGLE_TODO:
       return tasksArr.map((task) => {
@@ -34,16 +33,24 @@ const reducer = (tasksArr, action) => {
         return task.id !== action.payload.id;
       });
 
-      default:
-        return tasksArr;
+    default:
+      return tasksArr;
   }
 };
 
+function createNewTask(input) {
+  if (input !== "") {
+    const newTaskObj = {
+      content: input,
+      id: uuidv4(),
+      isCompleted: false,
+    };
+    return newTaskObj;
+  }
+}
+
 function Container() {
   const [inputValue, setInputValue] = useState("");
-  // const [tasksArr, setTasksArr] = useState(() => {
-  //   return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
-  // });
 
   const [tasksArr, dispatch] = useReducer(
     reducer,
@@ -60,52 +67,6 @@ function Container() {
   function handleChange(value) {
     setInputValue(value);
   }
-
-  // function addItem(newTask) {
-  //   if (newTask !== "") {
-  //     const newTaskObj = {
-  //       content: newTask,
-  //       id: uuidv4(),
-  //       isCompleted: false,
-  //     };
-  //     setTasksArr((prevTask) => [...prevTask, newTaskObj]);
-  //     setInputValue("");
-  //   }
-  // }
-
-  function newItem(newTask) {
-    if (newTask !== "") {
-      const newTaskObj = {
-        content: newTask,
-        id: uuidv4(),
-        isCompleted: false,
-      };
-      setInputValue("");
-      return newTaskObj;
-    }
-  }
-
-  // function deleteItem(id) {
-  //   setTasksArr((prevTasks) => {
-  //     return prevTasks.filter((task) => {
-  //       return task.id !== id;
-  //     });
-  //   });
-  // }
-
-  // function toggleTask(id) {
-  //   setTasksArr((prevTasks) => {
-  //     return prevTasks.map((task) => {
-  //       if (task.id === id) {
-  //         return {
-  //           ...task,
-  //           isCompleted: !task.isCompleted,
-  //         };
-  //       }
-  //       return task;
-  //     });
-  //   });
-  // }
 
   return (
     <>
@@ -132,6 +93,8 @@ function Container() {
             <Input inputValue={inputValue} handleChange={handleChange} />
             <Button
               inputValue={inputValue}
+              setInputValue={setInputValue}
+              createNewTask={createNewTask}
               type="Add"
               dispatch={dispatch}
               mRight={""}
