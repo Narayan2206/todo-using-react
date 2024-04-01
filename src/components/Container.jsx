@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import ToDo from "./ToDo";
@@ -6,13 +6,49 @@ import useThemeStore from "../store/store.js";
 import { v4 as uuidv4 } from "uuid";
 
 //  I am working in test branch
+const LOCAL_STORAGE_KEY = "tasks";
+const ACTIONS = {
+  ADD_TODO: "add-todo",
+  DELETE_TODO: "delete-todo",
+  TOGGLE_TODO: "toggle-todo",
+};
+
+const reducer = (tasksArr, action) => {
+  switch (action.type) {
+    case ACTIONS.ADD_TODO:
+      return [...tasksArr, newTask];
+
+    case ACTIONS.TOGGLE_TODO:
+      return tasksArr.map((task) => {
+        if (task.id === action.payload.id) {
+          return {
+            ...task,
+            isCompleted: !task.isCompleted,
+          };
+        }
+        return task;
+      });
+
+    case ACTIONS.DELETE_TODO:
+      return tasksArr.filter((task) => {
+        return task.id !== action.payload.id;
+      });
+
+      default:
+        return tasksArr;
+  }
+};
 
 function Container() {
-  const LOCAL_STORAGE_KEY = "tasks";
   const [inputValue, setInputValue] = useState("");
-  const [tasksArr, setTasksArr] = useState(() => {
-    return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
-  });
+  // const [tasksArr, setTasksArr] = useState(() => {
+  //   return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+  // });
+
+  const [tasksArr, dispatch] = useReducer(
+    reducer,
+    JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || []
+  );
 
   const currentTheme = useThemeStore((state) => state.currentTheme);
 
@@ -25,15 +61,27 @@ function Container() {
     setInputValue(value);
   }
 
-  function addItem(newTask) {
+  // function addItem(newTask) {
+  //   if (newTask !== "") {
+  //     const newTaskObj = {
+  //       content: newTask,
+  //       id: uuidv4(),
+  //       isCompleted: false,
+  //     };
+  //     setTasksArr((prevTask) => [...prevTask, newTaskObj]);
+  //     setInputValue("");
+  //   }
+  // }
+
+  function newItem(newTask) {
     if (newTask !== "") {
       const newTaskObj = {
         content: newTask,
         id: uuidv4(),
         isCompleted: false,
       };
-      setTasksArr((prevTask) => [...prevTask, newTaskObj]);
       setInputValue("");
+      return newTaskObj;
     }
   }
 
@@ -67,7 +115,9 @@ function Container() {
         }`}
       >
         <div
-          className={`w-4/5 p-4 min-h-96 mx-auto my-3  border-solid ${ currentTheme === "light" ? "border-blue-700" : "border-blue-950" } border-4 rounded-md font-poppins ${
+          className={`w-4/5 p-4 min-h-96 mx-auto my-3  border-solid ${
+            currentTheme === "light" ? "border-blue-700" : "border-blue-950"
+          } border-4 rounded-md font-poppins ${
             currentTheme === "dark" ? "bg-[#252B37]" : "bg-blue-100"
           } `}
         >
