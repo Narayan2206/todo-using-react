@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 //  I am working in test branch
 const LOCAL_STORAGE_KEY = "tasks";
-const ACTIONS = {
+export const ACTIONS = {
   ADD_TODO: "add-todo",
   DELETE_TODO: "delete-todo",
   TOGGLE_TODO: "toggle-todo",
@@ -85,27 +85,27 @@ function Container() {
     }
   }
 
-  function deleteItem(id) {
-    setTasksArr((prevTasks) => {
-      return prevTasks.filter((task) => {
-        return task.id !== id;
-      });
-    });
-  }
+  // function deleteItem(id) {
+  //   setTasksArr((prevTasks) => {
+  //     return prevTasks.filter((task) => {
+  //       return task.id !== id;
+  //     });
+  //   });
+  // }
 
-  function toggleTask(id) {
-    setTasksArr((prevTasks) => {
-      return prevTasks.map((task) => {
-        if (task.id === id) {
-          return {
-            ...task,
-            isCompleted: !task.isCompleted,
-          };
-        }
-        return task;
-      });
-    });
-  }
+  // function toggleTask(id) {
+  //   setTasksArr((prevTasks) => {
+  //     return prevTasks.map((task) => {
+  //       if (task.id === id) {
+  //         return {
+  //           ...task,
+  //           isCompleted: !task.isCompleted,
+  //         };
+  //       }
+  //       return task;
+  //     });
+  //   });
+  // }
 
   return (
     <>
@@ -133,7 +133,7 @@ function Container() {
             <Button
               inputValue={inputValue}
               type="Add"
-              addItem={addItem}
+              dispatch={dispatch}
               mRight={""}
             />
           </div>
@@ -148,8 +148,7 @@ function Container() {
                   id={task.id}
                   task={task.content}
                   isCompleted={task.isCompleted}
-                  deleteItem={deleteItem}
-                  toggleTask={toggleTask}
+                  dispatch={dispatch}
                 />
               );
             })}
